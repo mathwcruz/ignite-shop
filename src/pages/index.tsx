@@ -1,16 +1,17 @@
-import { GetStaticProps } from 'next'
-import Image from 'next/image'
-import Stripe from 'stripe'
-import { useKeenSlider } from 'keen-slider/react'
+import { GetStaticProps } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import Stripe from "stripe";
+import { useKeenSlider } from "keen-slider/react";
 
-import { stripe } from '@/lib/stripe'
-import { Shirt } from '@/interfaces/shirt'
-import { HomeContainer, Product } from '@/styles/pages/home'
+import { stripe } from "@/lib/stripe";
+import { Shirt } from "@/interfaces/shirt";
+import { HomeContainer, Product } from "@/styles/pages/home";
 
-import 'keen-slider/keen-slider.min.css'
+import "keen-slider/keen-slider.min.css";
 
 interface HomeProps {
-  shirts: Shirt[]
+  shirts: Shirt[];
 }
 
 export default function Home({ shirts }: HomeProps) {
@@ -19,47 +20,49 @@ export default function Home({ shirts }: HomeProps) {
       perView: 3,
       spacing: 48,
     },
-  })
+  });
 
   return (
     <HomeContainer ref={sliderRef} className="keen-slider">
       {shirts?.map(({ id, name, imageUrl, price }) => (
-        <Product key={id} className="keen-slider__slide">
-          <Image src={imageUrl} alt="" width={520} height={480} />
+        <Link  href={`/product/${id}`} key={id} prefetch={false}>
+          <Product className="keen-slider__slide">
+            <Image src={imageUrl} alt="" width={520} height={480} />
 
-          <footer>
-            <strong>{name}</strong>
-            <span>{price}</span>
-          </footer>
-        </Product>
+            <footer>
+              <strong>{name}</strong>
+              <span>{price}</span>
+            </footer>
+          </Product>
+        </Link>
       ))}
     </HomeContainer>
-  )
+  );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
   const { data } = await stripe.products.list({
-    expand: ['data.default_price'],
-  })
+    expand: ["data.default_price"],
+  });
 
   const shirts: Shirt[] = data?.map((product) => {
-    const price = product?.default_price as Stripe.Price
+    const price = product?.default_price as Stripe.Price;
 
     return {
       id: product.id,
       name: product.name,
       imageUrl: product.images[0],
-      price: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
+      price: new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
       }).format((price.unit_amount || 0) / 100),
-    }
-  })
+    };
+  });
 
   return {
     props: {
       shirts,
     },
-    revalidate: 60 * 60 * 2 // 2 hours
-  }
-}
+    revalidate: 60 * 60 * 2, // 2 hours
+  };
+};
