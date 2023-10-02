@@ -4,4 +4,5 @@ export interface Shirt {
   description?: string
   imageUrl: string
   price: string
+  defaultPriceId?: string
 }
