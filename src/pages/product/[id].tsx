@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { Head } from "next/document";
 import Stripe from "stripe";
 
 import { Shirt } from "@/interfaces/shirt";
@@ -19,19 +20,22 @@ interface ProductProps {
 }
 
 export default function Product({ shirt }: ProductProps) {
-  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState<boolean>(false)
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
+    useState<boolean>(false);
 
   const { isFallback } = useRouter();
 
   if (isFallback) {
-    return <p>Loading...</p>
+    return <p>Loading...</p>;
   }
 
   async function handleBuyShirt() {
     try {
       setIsCreatingCheckoutSession(true);
 
-      const response = await api.post('checkout', { priceId: shirt.defaultPriceId })
+      const response = await api.post("checkout", {
+        priceId: shirt.defaultPriceId,
+      });
 
       const { checkoutUrl } = response.data;
 
@@ -39,33 +43,39 @@ export default function Product({ shirt }: ProductProps) {
     } catch (error) {
       setIsCreatingCheckoutSession(false);
 
-      alert('Error on redirect to checkout')
+      alert("Error on redirect to checkout");
     }
   }
 
   return (
-    <ProductContainer>
-      <ImageContainer>
-        <Image src={shirt?.imageUrl} width={520} height={480} alt="" />
-      </ImageContainer>
+    <>
+      <Head>
+        <title>shirt?.name | Ignite Shop</title>
+      </Head>
 
-      <ProductDetails>
-        <h1>{shirt?.name}</h1>
-        <span>{shirt?.price}</span>
+      <ProductContainer>
+        <ImageContainer>
+          <Image src={shirt?.imageUrl} width={520} height={480} alt="" />
+        </ImageContainer>
 
-        <p>{shirt?.description}</p>
+        <ProductDetails>
+          <h1>{shirt?.name}</h1>
+          <span>{shirt?.price}</span>
 
-        <button disabled={isCreatingCheckoutSession} onClick={handleBuyShirt}>Buy now</button>
-      </ProductDetails>
-    </ProductContainer>
+          <p>{shirt?.description}</p>
+
+          <button disabled={isCreatingCheckoutSession} onClick={handleBuyShirt}>
+            Buy now
+          </button>
+        </ProductDetails>
+      </ProductContainer>
+    </>
   );
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: [
-      { params: { id: 'prod_OheONz21YMPvoO' } }
-    ],
+    paths: [{ params: { id: "prod_OheONz21YMPvoO" } }],
     fallback: true,
   };
 };
@@ -88,7 +98,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       style: "currency",
       currency: "USD",
     }).format((price.unit_amount || 0) / 100),
-    defaultPriceId: price.id
+    defaultPriceId: price.id,
   };
 
   return {
