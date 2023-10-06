@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { Head } from "next/document";
+import Head from "next/head";
 import Image from "next/image";
 import Stripe from "stripe";
 

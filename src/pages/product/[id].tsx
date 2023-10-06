@@ -2,7 +2,7 @@ import { useState } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Head } from "next/document";
+import Head from "next/head";
 import Stripe from "stripe";
 
 import { Shirt } from "@/interfaces/shirt";

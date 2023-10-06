@@ -1,7 +1,7 @@
 import { GetStaticProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Head } from "next/document";
+import Head from "next/head";
 import Stripe from "stripe";
 import { useKeenSlider } from "keen-slider/react";
 
